@@ -14,13 +14,13 @@ void backwardstep1(){
 AccelStepper stepper1(forwardstep1, backwardstep1);
 
 
-char command = ' ';
+byte command;
 
 void setup() {
-  Wire.begin(8);
+  Wire.begin(9);
   Wire.onReceive(runFlower);
-  stepper1.setMaxSpeed(200.0);
-  stepper1.setAcceleration(100.0);
+  stepper1.setMaxSpeed(100.0);
+  stepper1.setAcceleration(50.0);
   stepper1.moveTo(150);
 
   Serial.begin(9600);
@@ -37,7 +37,7 @@ void runFlower(){
 
 void loop(){
   
-  if (command == '#'){
+  if (command == 1){
   digitalWrite(LED_BUILTIN, HIGH);
   //Serial.println("Y");
     if (stepper1.distanceToGo() == 0)
@@ -45,10 +45,10 @@ void loop(){
     stepper1.run();
     
   }    
-  else if (command == '?'){
+  else if (command == 0){
     digitalWrite(LED_BUILTIN, LOW);
     //Serial.println("N");
-    stepper1.moveTo(24);
+    stepper1.moveTo(150);
     stepper1.run();
   }    
 }
