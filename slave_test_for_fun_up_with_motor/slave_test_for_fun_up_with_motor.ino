@@ -21,9 +21,9 @@ byte command = 0;
 void setup() {
   stepper1.setMaxSpeed(200.0);
   stepper1.setAcceleration(100.0);
-  stepper1.moveTo(150);
+  stepper1.moveTo(200);
 
-  pinMode(fanPin,OUTPUT);
+  //pinMode(fanPin,OUTPUT);
   //fun.setSpeed(200);
   //fun.run(RELEASE);
   Serial.begin(9600);
