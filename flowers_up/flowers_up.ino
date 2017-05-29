@@ -10,8 +10,14 @@
 #include <AccelStepper.h>
 #include <AFMotor.h>
 
-//movement 1 timer
-SimpleTimer timer1;
+//movement 1 begin timer
+SimpleTimer mov1_begin_timer;
+
+//movement 1 live timer
+SimpleTimer mov1_sleep_timer;
+
+//movement 2 live timer
+SimpleTimer timer2;
 
 // setting up step1
 AF_Stepper step1(200, 1);
@@ -28,13 +34,18 @@ AccelStepper stepper1(forwardstep1, backwardstep1);
 // setting up fun
 AF_DCMotor fun(3);
 
-const int timeFlowersOpenAndClose = 12.5;
+const int timeFlowersOpenAndClose = 12.5 * 1000;
 const int halfTime = timeFlowersOpenAndClose/2.0;
-int delay_seconds = 1;
-int delay_time = delay_seconds * 1000 ;
-//movement 1 needs 26s
-long mov_1_interval = 26000;
+//different layers ,different delay_time,
+//1 layers: 0, 2 layers: 1, 3 layers: 2
+int delay_seconds = 2;
+int mov1_begin_time = delay_seconds * 1000 ;
+long mov1_begin_delay = mov1_begin_time;
 
+//movement 1 needs 26s
+long mov1_live_time = 26000;
+
+//long mov_2_interval = 0;
 
 
 void funUp(){
@@ -53,6 +64,22 @@ void flowersCloseAndOpen(){
   }
   stepper1.run();
 }
+void flowers_close_and_open_with_times(int times){
+  funUp();
+  long live_time = times * timeFlowersOpenAndClose;
+  boolean flag = 1;
+  long previous_millis = millis();
+  while(flag){
+    long current_millis = millis();
+    if(current_millis - previous_millis < live_time ){
+      //previous_millis = current_millis;
+      flowersCloseAndOpen();
+      //mov1_sleep_timer.run();
+    }
+    else flag=0;
+  }
+  return; 
+}
 void flowersOpen(){
   funUp();
   stepper1.moveTo(-150);
@@ -69,8 +96,10 @@ void flowersDown(){
   stepper1.moveTo(-150);
   stepper1.run();
 }
-void flowersSleep(){
-  delay(10000000);
+
+//keep open status and do nothing
+void flowersSleep(int second){
+  delay(second * 1000);
 }
 
 void flowersHome(){
@@ -82,12 +111,18 @@ void setup(){
   stepper1.setMaxSpeed(80.0);
   stepper1.setAcceleration(40.0);
   stepper1.moveTo(-150);
-  delay(delay_time);
-  timer1.setTimeout(mov_1_interval,flowersSleep);
+  
+  delay(mov1_begin_time);
+  // close and open 2 times
+  flowers_close_and_open_with_times(2);
+  //flowers sleep 200 s
+  flowersSleep(200);
+  // after 1 movement, sleep
+  mov1_sleep_timer.setTimeout(mov1_live_time, flowersSleep);
+  
 }
 
 void loop(){
-  flowersCloseAndOpen();
-  timer1.run();
-  //funUp();
+  
 }
+

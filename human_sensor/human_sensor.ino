@@ -5,9 +5,9 @@
  * Version: 1.0
  */
  
-int sensorPin = 2;
-int relayPin = 3;
-int live_time = 26000;
+int sensorPin = 3;
+int relayPin = 2;
+int live_time = 10*1000;
 
 void relayClose(){
   digitalWrite(relayPin,HIGH); 
@@ -17,14 +17,15 @@ void relayOpen(){
   digitalWrite(relayPin, LOW);
 }
 
-void setup()
-{
-pinMode(sensorPin,INPUT); 
-pinMode(relayPin,OUTPUT); 
+void setup(){
+  pinMode(sensorPin,INPUT); 
+  pinMode(relayPin,OUTPUT); 
+  Serial.begin(9600);
 }
  
 void loop(){
   int val=digitalRead(sensorPin); 
+  Serial.println(val);
   if (val == 1) { 
     relayClose();
     delay(live_time);
