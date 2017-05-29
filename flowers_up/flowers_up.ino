@@ -39,9 +39,11 @@ long mov_1_interval = 26000;
 
 void funUp(){
   fun.setSpeed(255);
+  fun.run(FORWARD);
 }
 void funDown(){
   fun.setSpeed(0);
+  fun.run(FORWARD);
 }
 void flowersCloseAndOpen(){
   funUp();
@@ -87,4 +89,5 @@ void setup(){
 void loop(){
   flowersCloseAndOpen();
   timer1.run();
+  //funUp();
 }
