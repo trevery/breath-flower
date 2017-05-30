@@ -6,18 +6,18 @@
  *     after 2.6s, all the flowers close.
  */
 
-#include <SimpleTimer.h>
+//#include <SimpleTimer.h>
 #include <AccelStepper.h>
 #include <AFMotor.h>
 
 //movement 1 begin timer
-SimpleTimer mov1_begin_timer;
+//SimpleTimer mov1_begin_timer;
 
 //movement 1 live timer
-SimpleTimer mov1_sleep_timer;
+//SimpleTimer mov1_sleep_timer;
 
 //movement 2 live timer
-SimpleTimer timer2;
+//SimpleTimer timer2;
 
 // setting up step1
 AF_Stepper step1(200, 1);
@@ -34,19 +34,31 @@ AccelStepper stepper1(forwardstep1, backwardstep1);
 // setting up fun
 AF_DCMotor fun(3);
 
-const int timeFlowersOpenAndClose = 12.5 * 1000;
-const int halfTime = timeFlowersOpenAndClose/2.0;
+const long timeFlowersOpenAndClose = 11.2 * 1000;
+const long halfTime = timeFlowersOpenAndClose/2.0;
 //different layers ,different delay_time,
 //1 layers: 0, 2 layers: 1, 3 layers: 2
-int delay_seconds = 2;
-int mov1_begin_time = delay_seconds * 1000 ;
-long mov1_begin_delay = mov1_begin_time;
+//int delay_seconds = 2;
 
-//movement 1 needs 26s
-long mov1_live_time = 26000;
+/*
+ * CONFIG:
+ */
+ 
+// isHome
+boolean mov1_isHome = 0;
+boolean mov2_isHome = 0;
+// begin_delay_seconds
 
-//long mov_2_interval = 0;
+int mov1_delay_seconds = 2;
+int mov2_delay_seconds = 0;
 
+/*
+ * CONFIG
+ */
+
+long mov1_begin_time = mov1_delay_seconds * 1000 ;
+long mov2_begin_time = mov2_delay_seconds * 1000 ;
+ 
 
 void funUp(){
   fun.setSpeed(255);
@@ -104,22 +116,64 @@ void flowersSleep(int second){
 
 void flowersHome(){
   funUp();
-  stepper1.moveTo(0);
+  stepper1.moveTo(-200);
   stepper1.run();
+}
+void flowers_home(){
+  funUp();
+  long home_time = 0;
+  long previous_time = millis();
+  int flag = 1;
+  while(flag){
+    long current_time = millis();
+    if(current_time - previous_time < home_time){
+      flowersHome();
+    }
+    else{
+      flag = 0;
+    }
+  }
 }
 void setup(){
   stepper1.setMaxSpeed(80.0);
   stepper1.setAcceleration(40.0);
-  stepper1.moveTo(-150);
-  
+  //stepper1.moveTo(-150);
+//      stepper1.run();
+  long previous_millis = millis();
+  boolean flag = 1;
+  long jerk_time = halfTime;
+  while(flag){
+    long current_millis = millis();
+    if(current_millis - previous_millis < jerk_time ){
+      stepper1.moveTo(-150);
+      stepper1.run();
+    }
+    else flag =0;
+  }
+  //stepper1.run();
+// movement 1 
+  // begin at 2 second.
   delay(mov1_begin_time);
-  // close and open 2 times
   flowers_close_and_open_with_times(2);
-  //flowers sleep 200 s
-  flowersSleep(200);
-  // after 1 movement, sleep
-  mov1_sleep_timer.setTimeout(mov1_live_time, flowersSleep);
+// movements 2
+  if(mov2_isHome == 1){
+    flowers_home();
+  }
+  else{
+    delay(mov2_begin_time);
+    flowers_close_and_open_with_times(1);
+  }
   
+  
+////  
+//  //movements 4
+//  if(mov4_isHome = 1){
+//    flowersHome();
+//  }
+//  else{
+//    delay(mov4_begin_time);
+//    flowers_close_and_open_with_times(1);
+//  }
 }
 
 void loop(){
