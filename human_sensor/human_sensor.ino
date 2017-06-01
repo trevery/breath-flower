@@ -7,7 +7,7 @@
  
 int sensorPin = 3;
 int relayPin = 2;
-int live_time = 10*1000;
+long live_time = 50.0 * 1000;
 
 void relayClose(){
   digitalWrite(relayPin,HIGH); 
@@ -24,17 +24,15 @@ void setup(){
 }
  
 void loop(){
-  int val=digitalRead(sensorPin); 
+  boolean val=digitalRead(sensorPin); 
   Serial.println(val);
   if (val == 1) { 
     relayClose();
     delay(live_time);
+    relayOpen();
   }
   else if(val == 0){
     relayOpen();
   } 
-  else {
-    return;
-  }
-  delay(100);
+  delay(30000);
 }

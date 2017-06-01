@@ -150,7 +150,6 @@ void setup(){
     }
     else flag =0;
   }
-  //stepper1.run();
 // movement 1 
   // begin at 2 second.
   delay(mov1_begin_time);
@@ -165,7 +164,7 @@ void setup(){
   }
   
   
-////  
+// 
 //  //movements 4
 //  if(mov4_isHome = 1){
 //    flowersHome();
